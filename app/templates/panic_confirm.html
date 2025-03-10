@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Panic - Bybit Trading Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Confirm Panic Action</h1>
+    <p>Are you sure you want to cancel all open orders? This action cannot be undone.</p>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+    <form method="POST" action="{{ url_for('main.panic_confirm') }}">
+        <label for="pin">Enter Panic PIN:</label>
+        <input type="password" id="pin" name="pin" required><br>
+        <input type="hidden" name="confirm" value="yes">
+        <button type="submit" class="confirm-btn">Yes, Cancel All Orders</button>
+    </form>
+    <form method="GET" action="{{ url_for('main.overview') }}">
+        <button type="submit" class="cancel-btn">No, Go Back</button>
+    </form>
+</body>
+</html>

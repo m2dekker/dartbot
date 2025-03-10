@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+h1, h2 {
+    color: #333;
+}
+.summary-stats {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+.summary-stats span {
+    font-weight: bold;
+}
+nav {
+    margin-bottom: 20px;
+}
+nav button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border: none;
+    background-color: #ddd;
+    cursor: pointer;
+}
+nav button.active {
+    background-color: #4CAF50;
+    color: white;
+}
+form {
+    margin-bottom: 20px;
+}
+label {
+    margin-right: 10px;
+}
+input, select {
+    margin-bottom: 10px;
+    padding: 5px;
+}
+pre {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 5px;
+}
+#tradingview_chart {
+    margin-bottom: 20px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+th {
+    background-color: #f2f2f2;
+}
+.panic-button {
+    padding: 15px 30px;
+    background-color: #ff0000;
+    color: white;
+    border: 2px solid #cc0000;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+.panic-button:hover {
+    background-color: #cc0000;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+}
+.error { color: red; }
+button { background-color: #4CAF50; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+button:hover { background-color: #45a049; }
+input { margin: 5px 0; padding: 5px; }
+.confirm-btn { background-color: #f44336; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+.confirm-btn:hover { background-color: #d32f2f; }
+.cancel-btn { background-color: #4CAF50; color: white; border: none; padding: 10px 20px; cursor: pointer; margin-top: 10px; }
+.cancel-btn:hover { background-color: #45a049; }

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Overview - Bybit Trading Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://s3.tradingview.com/tv.js"></script>
+</head>
+<body>
+    <h1>Overview</h1>
+
+    <div class="summary-stats">
+        <span>Current Mode: {{ mode|capitalize }}</span>
+        {% if summary_stats %}
+            <span>Open Orders: {{ summary_stats.open_orders }}</span>
+            <span>Open Positions: {{ summary_stats.open_positions }}</span>
+            <span>Unrealized P&L: {{ summary_stats.unrealized_pnl }}</span>
+        {% else %}
+            <span>No summary stats available.</span>
+        {% endif %}
+    </div>
+
+    <nav>
+        <a href="{{ url_for('main.index') }}"><button>Trade</button></a>
+        <a href="{{ url_for('main.overview') }}"><button class="active">Overview</button></a>
+        <a href="{{ url_for('main.papertrading') }}"><button>Paper Trading</button></a>
+        <a href="{{ url_for('main.logout') }}"><button>Logout</button></a>
+    </nav>
+
+    <h2>Mode Switch</h2>
+    <form method="POST" action="{{ url_for('main.switch_mode') }}">
+        {% if mode == "testnet" %}
+            <button type="submit" name="mode" value="live">Switch to Live</button>
+        {% else %}
+            <button type="submit" name="mode" value="testnet">Switch to Testnet</button>
+        {% endif %}
+    </form>
+
+    <h2>Bots Configuration</h2>
+    {% for bot_name, bot in bots.items() %}
+        <h3>{{ bot_name }}</h3>
+        <form method="POST" action="{{ url_for('main.overview') }}">
+            <input type="hidden" name="bot_name" value="{{ bot_name }}">
+            {% if bot_name == "Bot1" %}
+                <label>Status: {{ "Running" if bot.trades else "Idle" }}</label><br>
+                <label>Order Type: 
+                    <select name="order_type">
+                        <option value="market" {% if bot.order_type == "market" %}selected{% endif %}>Market</option>
+                        <option value="limit" {% if bot.order_type == "limit" %}selected{% endif %}>Limit</option>
+                    </select>
+                </label><br>
+                <label>Take-Profit Percent: <input type="number" name="tp_percent" value="{{ bot.take_profit_targets[0].percent }}" step="0.1"></label><br>
+                <label>Sell Percent: <input type="number" name="tp_sell_percent" value="{{ bot.take_profit_targets[0].sell_percent }}" step="1"></label><br>
+                <label>Stop-Loss Percent: <input type="number" name="stop_loss_percent" value="{{ bot.stop_loss_percent }}" step="0.1"></label><br>
+                <h4>Active Trades:</h4>
+                {% if bot.trades %}
+                    <ul>
+                    {% for symbol, trade in bot.trades.items() %}
+                        <li>{{ symbol }}: Qty={{ trade.qty }}, Entry={{ trade.entry_price }}, Status={{ trade.status }}</li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No active trades.</p>
+                {% endif %}
+            {% else %}
+                <label>Status: {{ bot.status }}</label><br>
+                <label>Order Type: 
+                    <select name="order_type">
+                        <option value="market" {% if bot.order_type == "market" %}selected{% endif %}>Market</option>
+                        <option value="limit" {% if bot.order_type == "limit" %}selected{% endif %}>Limit</option>
+                    </select>
+                </label><br>
+                <label>Amount per Trade (USDT or %): <input type="text" name="amount_per_trade" value="{{ bot.amount_per_trade }}"></label><br>
+                <label>Take-Profit Percent: <input type="number" name="tp_percent" value="{{ bot.take_profit_targets[0].percent }}" step="0.1"></label><br>
+                <label>Sell Percent: <input type="number" name="tp_sell_percent" value="{{ bot.take_profit_targets[0].sell_percent }}" step="1"></label><br>
+                <label>Stop-Loss Percent: <input type="number" name="stop_loss_percent" value="{{ bot.stop_loss_percent }}" step="0.1"></label><br>
+                <label>Max DCA Orders: <input type="number" name="max_dca_orders" value="{{ bot.max_dca_orders }}"></label><br>
+                <label>Price Deviation (%): <input type="number" name="price_deviation" value="{{ bot.price_deviation }}" step="0.1"></label><br>
+                <label>Order Size Multiplier: <input type="number" name="order_size_multiplier" value="{{ bot.order_size_multiplier }}" step="0.1"></label><br>
+                <label>Price Deviation Multiplier: <input type="number" name="price_deviation_multiplier" value="{{ bot.price_deviation_multiplier }}" step="0.1"></label><br>
+            {% endif %}
+            <button type="submit">Save Configuration</button>
+        </form>
+    {% endfor %}
+
+    <h2>Open Orders</h2>
+    {% if open_orders %}
+        <ul>
+        {% for order in open_orders %}
+            <li>{{ order }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No open orders.</p>
+    {% endif %}
+
+    <h2>Positions</h2>
+    {% if positions %}
+        <ul>
+        {% for position in positions %}
+            <li>{{ position }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No positions.</p>
+    {% endif %}
+
+    {% if panic_result %}
+        <p class="success">Panic Result: {{ panic_result }}</p>
+    {% endif %}
+
+    {% if error %}
+        <p class="error">Error: {{ error }}</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('main.panic') }}">
+        <button type="submit">Panic (Cancel All Orders)</button>
+    </form>
+</body>
+</html>

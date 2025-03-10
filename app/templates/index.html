@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bybit Trading Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://s3.tradingview.com/tv.js"></script>
+</head>
+<body>
+    <h1>Bybit Trading Bot</h1>
+    
+    <!-- Summary Stats -->
+    <div class="summary-stats">
+        <span>Open Orders: {{ summary_stats.open_orders }}</span>
+        <span>Open Positions: {{ summary_stats.open_positions }}</span>
+        <span>Unrealized P&L: {{ summary_stats.unrealized_pnl }}</span>
+    </div>
+    
+    <!-- Navigation Menu -->
+    <nav>
+        <a href="{{ url_for('main.index') }}"><button class="active">Trade</button></a>
+        <a href="{{ url_for('main.overview') }}"><button>Overview</button></a>
+        <a href="{{ url_for('main.papertrading') }}"><button>Paper Trading</button></a>
+        <a href="{{ url_for('main.logout') }}"><button>Logout</button></a>
+    </nav>
+    
+    <!-- Symbol Selection -->
+    <h2>Select Trading Symbol</h2>
+    <form method="POST" action="/">
+        <label for="symbol">Symbol (e.g., BTCUSDT):</label>
+        <input type="text" id="symbol" name="symbol" value="{{ symbol or '' }}" required>
+        <input type="submit" value="Set Symbol">
+    </form>
+    
+    {% if symbol %}
+    <!-- TradingView Chart -->
+    <h2>Chart for {{ symbol }}</h2>
+    <div id="tradingview_chart" style="height: 400px; width: 100%;"></div>
+    <script type="text/javascript">
+        new TradingView.widget({
+            "width": "100%",
+            "height": 400,
+            "symbol": "BYBIT:{{ symbol }}",
+            "interval": "D",
+            "timezone": "Etc/UTC",
+            "theme": "light",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "allow_symbol_change": false,
+            "container_id": "tradingview_chart"
+        });
+    </script>
+    
+    <!-- Order Form -->
+    <h2>Place Order ({{ symbol }})</h2>
+    <form method="POST" action="/place_order">
+        <input type="hidden" name="symbol" value="{{ symbol }}">
+        
+        <label for="order_type">Order Type:</label>
+        <select id="order_type" name="order_type" required>
+            <option value="market_buy">Market Buy</option>
+            <option value="market_sell">Market Sell</option>
+            <option value="limit_buy">Limit Buy</option>
+            <option value="limit_sell">Limit Sell</option>
+        </select><br><br>
+        
+        <label for="qty">Quantity:</label>
+        <input type="number" id="qty" name="qty" step="any" required><br><br>
+        
+        <label for="price" id="price_label" style="display:none;">Limit Price:</label>
+        <input type="number" id="price" name="price" step="any" style="display:none;"><br><br>
+        
+        <input type="submit" value="Place Order">
+    </form>
+    
+    <!-- Response Display -->
+    {% if response %}
+    <h3>Order Response</h3>
+    <pre>{{ response }}</pre>
+    {% endif %}
+    {% endif %}
+    
+    <script>
+        document.getElementById('order_type').addEventListener('change', function() {
+            const priceLabel = document.getElementById('price_label');
+            const priceInput = document.getElementById('price');
+            if (this.value.includes('limit')) {
+                priceLabel.style.display = 'block';
+                priceInput.style.display = 'block';
+                priceInput.required = true;
+            } else {
+                priceLabel.style.display = 'none';
+                priceInput.style.display = 'none';
+                priceInput.required = false;
+            }
+        });
+    </script>
+</body>
+</html>
